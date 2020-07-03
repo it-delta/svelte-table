@@ -32,7 +32,7 @@
         let ret = (
           filterSettings[f] === undefined ||
           // default to value() if filterValue() not provided in col
-          filterSettings[f] === (typeof columnByKey[f].filterValue === 'function' ? 
+          filterSettings[f] === (typeof columnByKey[f].filterValue === 'function' ?
             columnByKey[f].filterValue(r) : columnByKey[f].value(r))
         );
         return ret;
@@ -63,7 +63,10 @@
   $: {
     let col = columnByKey[sortBy];
     if (col !== undefined && col.sortable === true && typeof col.value === "function") {
-      sortFunction = r => col.value(r);
+      if (typeof col.sortValue === "function")
+        sortFunction = r => col.sortValue(r);
+      else
+        sortFunction = r => col.value(r);
     }
   };
 
@@ -74,13 +77,13 @@
       sortOrder = 1;
     }
   }
-  
+
   const handleClickCol = (event, col) => {
     updateSortOrder(col.key)
     sortBy = col.key;
     dispatch('clickCol', {event, col, key:col.key} );
   }
-  
+
   const handleClickRow = (event, row) => {
     dispatch('clickRow', {event, row} );
   }
